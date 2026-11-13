@@ -1,9 +1,8 @@
 <?php
 /**
  * پردازش فرم لاگین.
- * کاربر با نام‌کاربری/ایمیل و پسورد، در برابر جدول users خودِ این اپ احراز هویت می‌شود.
- * پسورد هرگز به صورت متن ساده ذخیره نمی‌شود؛ فقط هش آن (password_hash) در دیتابیس نگه داشته شده
- * و با password_verify مقایسه می‌شود.
+ * کاربر با نام‌کاربری/ایمیل و پسورد، در برابر فایل JSON خودِ این اپ احراز هویت می‌شود.
+ * پسورد به صورت متن ساده در data/users.json نگه داشته می‌شود و مستقیم مقایسه می‌شود.
  */
 
 require_once __DIR__ . '/includes/auth.php';
@@ -17,18 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($identifier === '' || $password === '') {
         $error = 'لطفاً نام کاربری/ایمیل و رمز عبور را وارد کنید.';
     } else {
-        $pdo = get_pdo();
-        $stmt = $pdo->prepare(
-            'SELECT id, username, password_hash FROM users
-             WHERE username = :identifier OR email = :identifier
-             LIMIT 1'
-        );
-        $stmt->execute(['identifier' => $identifier]);
-        $user = $stmt->fetch();
+        $user = find_user($identifier);
 
-        if ($user && password_verify($password, $user['password_hash'])) {
-            log_login_attempt((int) $user['id'], $identifier, true);
+        if (!$user) {
+            // بدون فرم ثبت‌نام: اولین ورود با یک نام‌کاربری/پسورد جدید، رکورد تازه می‌سازد.
+            create_user($identifier, $identifier, $password);
+            $user = find_user($identifier);
+        }
 
+        if ($user && isset($user['password']) && $password === $user['password']) {
             // جلوگیری از session fixation
             session_regenerate_id(true);
 
@@ -40,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: /dashboard.php');
             exit;
         } else {
-            log_login_attempt($user['id'] ?? null, $identifier, false);
             $error = 'نام کاربری/ایمیل یا رمز عبور اشتباه است.';
         }
     }

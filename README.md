@@ -1,38 +1,19 @@
-# Instagram Login Clone (PHP + MySQL)
+# Instagram Login Clone (PHP + JSON)
 
-کلون آموزشی صفحه‌ی لاگین اینستاگرام با بک‌اند **PHP خام + MySQL**.
+کلون آموزشی صفحه‌ی لاگین اینستاگرام با بک‌اند **PHP خام + فایل JSON (بدون دیتابیس)**.
 
 > ⚠️ این پروژه یک سیستم لاگین/ثبت‌نام *برای خودِ این اپ* است. هیچ اطلاعاتی از کاربران واقعی اینستاگرام جمع‌آوری نمی‌کند و کاربر را به صفحه‌ی اصلی اینستاگرام ریدایرکت نمی‌کند.
 
 ## امکانات
-- ثبت‌نام کاربر (`register.php`) با هش کردن پسورد (`password_hash` / bcrypt)
-- ورود کاربر (`login.php`) با بررسی پسورد از طریق `password_verify`
+- ثبت‌نام کاربر (`register.php`)
+- ورود کاربر (`login.php`) — اگر کاربر وجود نداشته باشد، همان‌جا با یوزرنیم/پسورد وارد‌شده ساخته و وارد می‌شود
 - مدیریت session (با `session_regenerate_id` برای جلوگیری از session fixation)
-- ثبت لاگ تلاش‌های ورود (موفق/ناموفق) در جدول `login_attempts` — بدون ذخیره‌ی پسورد
 - صفحه‌ی داشبورد محافظت‌شده (`dashboard.php`) و خروج (`logout.php`)
 
 ## راه‌اندازی
+نیازی به دیتابیس نیست. کاربران در `data/users.json` ذخیره می‌شوند (به‌صورت خودکار ساخته می‌شود؛ پوشه‌ی `data/` باید برای PHP قابل نوشتن باشد).
 
-### 1. دیتابیس
-```bash
-mysql -u root -p < database/schema.sql
-```
-
-### 2. متغیرهای محیطی
-فایل `.env.example` را کپی کرده و مقادیر را تنظیم کنید (یا به صورت env واقعی export کنید):
-```bash
-cp .env.example .env
-```
-> توجه: PHP خام به‌طور پیش‌فرض فایل `.env` را نمی‌خوانَد؛ مقادیر را از طریق env سرور (مثلاً در `php.ini` یا با `export`) ست کنید، یا `config/db.php` را برای خواندن از `.env` گسترش دهید.
-
-مقادیر پیش‌فرض در `config/db.php`:
-- `DB_HOST=127.0.0.1`
-- `DB_PORT=3306`
-- `DB_NAME=instagram_clone`
-- `DB_USER=root`
-- `DB_PASS=` (خالی)
-
-### 3. اجرا
+### اجرا
 ```bash
 php -S localhost:8000
 ```
@@ -41,8 +22,8 @@ php -S localhost:8000
 ## ساختار پروژه
 ```
 .
-├── config/db.php         # اتصال PDO به MySQL
-├── database/schema.sql   # اسکیمای جداول users و login_attempts
+├── data/users.json       # ذخیره‌ی کاربران (ساخته می‌شود، در git نیست)
+├── includes/storage.php  # خواندن/نوشتن کاربران در JSON
 ├── includes/auth.php     # توابع احراز هویت/session
 ├── assets/               # CSS و لوگو
 ├── index.php             # ریدایرکت به login یا dashboard
@@ -52,8 +33,9 @@ php -S localhost:8000
 └── logout.php            # خروج از حساب
 ```
 
-## نکات امنیتی رعایت‌شده
-- پسورد هرگز به صورت متن ساده ذخیره نمی‌شود (فقط `password_hash`).
-- کوئری‌ها با Prepared Statements (PDO) اجرا می‌شوند → مقاوم در برابر SQL Injection.
+## نکات امنیتی
+- ⚠️ پسورد به صورت متن ساده (plain text) در `data/users.json` ذخیره می‌شود — هش نمی‌شود. فقط برای آموزش/تست محلی مناسب است، نه محیط واقعی.
+- نوشتن در فایل JSON با `flock` انجام می‌شود تا ثبت‌نام همزمان فایل را خراب نکند.
+- `data/` با `.htaccess` (Apache) مسدود است؛ با nginx/`php -S` آن را خارج از webroot قرار دهید یا دسترسی را ببندید.
 - خروجی‌های کاربر با `htmlspecialchars` escape می‌شوند → مقاوم در برابر XSS.
 - Session ID بعد از لاگین موفق regenerate می‌شود.
