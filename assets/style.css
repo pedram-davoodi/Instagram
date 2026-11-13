@@ -37,6 +37,7 @@ body {
 .logo {
   display: block;
   margin: 22px auto 24px;
+  border-radius: 13px;
 }
 
 form {

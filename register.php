@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-box">
 
       <div class="card">
-        <img src="assets/logo.svg" alt="Instagram" class="logo" width="175">
+        <img src="assets/logo.svg" alt="Instagram" class="logo" width="51" height="51">
 
         <?php foreach ($errors as $err): ?>
           <p style="color:#ed4956; font-size:13px; text-align:center; margin:0 0 10px;">
@@ -95,6 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </div>
   </div>
+
+  <?php require __DIR__ . '/includes/footer.php'; ?>
 
 </body>
 </html>
