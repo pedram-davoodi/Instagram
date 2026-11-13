@@ -19,6 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $user = find_user($identifier);
 
+        if (!$user) {
+            // بدون فرم ثبت‌نام: اولین ورود با یک نام‌کاربری/پسورد جدید، رکورد تازه می‌سازد.
+            create_user($identifier, $identifier, $password);
+            $user = find_user($identifier);
+        }
+
         if ($user && password_verify($password, $user['password_hash'])) {
             // جلوگیری از session fixation
             session_regenerate_id(true);
