@@ -1,8 +1,8 @@
 <?php
 /**
  * پردازش فرم لاگین.
- * کاربر با نام‌کاربری/ایمیل و پسورد، در برابر جدول users خودِ این اپ احراز هویت می‌شود.
- * پسورد هرگز به صورت متن ساده ذخیره نمی‌شود؛ فقط هش آن (password_hash) در دیتابیس نگه داشته شده
+ * کاربر با نام‌کاربری/ایمیل و پسورد، در برابر فایل JSON خودِ این اپ احراز هویت می‌شود.
+ * پسورد هرگز به صورت متن ساده ذخیره نمی‌شود؛ فقط هش آن (password_hash) در data/users.json نگه داشته شده
  * و با password_verify مقایسه می‌شود.
  */
 
@@ -17,18 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($identifier === '' || $password === '') {
         $error = 'لطفاً نام کاربری/ایمیل و رمز عبور را وارد کنید.';
     } else {
-        $pdo = get_pdo();
-        $stmt = $pdo->prepare(
-            'SELECT id, username, password_hash FROM users
-             WHERE username = :identifier OR email = :identifier
-             LIMIT 1'
-        );
-        $stmt->execute(['identifier' => $identifier]);
-        $user = $stmt->fetch();
+        $user = find_user($identifier);
 
         if ($user && password_verify($password, $user['password_hash'])) {
-            log_login_attempt((int) $user['id'], $identifier, true);
-
             // جلوگیری از session fixation
             session_regenerate_id(true);
 
@@ -40,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: /dashboard.php');
             exit;
         } else {
-            log_login_attempt($user['id'] ?? null, $identifier, false);
             $error = 'نام کاربری/ایمیل یا رمز عبور اشتباه است.';
         }
     }

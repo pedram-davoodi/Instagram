@@ -1,6 +1,6 @@
 <?php
 /**
- * ثبت‌نام کاربر جدید در جدول users خودِ این اپ.
+ * ثبت‌نام کاربر جدید در فایل data/users.json.
  * پسورد فقط به صورت هش‌شده (bcrypt) ذخیره می‌شود.
  */
 
@@ -28,23 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        $pdo = get_pdo();
-
-        $stmt = $pdo->prepare('SELECT id FROM users WHERE username = :u OR email = :e LIMIT 1');
-        $stmt->execute(['u' => $username, 'e' => $email]);
-        if ($stmt->fetch()) {
+        if (!create_user($username, $email, $password)) {
             $errors[] = 'این نام کاربری یا ایمیل قبلاً ثبت شده است.';
         }
     }
 
     if (!$errors) {
-        $hash = password_hash($password, PASSWORD_BCRYPT);
-
-        $stmt = $pdo->prepare(
-            'INSERT INTO users (username, email, password_hash) VALUES (:u, :e, :p)'
-        );
-        $stmt->execute(['u' => $username, 'e' => $email, 'p' => $hash]);
-
         header('Location: login.php');
         exit;
     }
