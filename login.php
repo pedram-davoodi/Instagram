@@ -2,8 +2,7 @@
 /**
  * پردازش فرم لاگین.
  * کاربر با نام‌کاربری/ایمیل و پسورد، در برابر فایل JSON خودِ این اپ احراز هویت می‌شود.
- * پسورد هرگز به صورت متن ساده ذخیره نمی‌شود؛ فقط هش آن (password_hash) در data/users.json نگه داشته شده
- * و با password_verify مقایسه می‌شود.
+ * پسورد به صورت متن ساده در data/users.json نگه داشته می‌شود و مستقیم مقایسه می‌شود.
  */
 
 require_once __DIR__ . '/includes/auth.php';
@@ -25,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = find_user($identifier);
         }
 
-        if ($user && password_verify($password, $user['password_hash'])) {
+        if ($user && isset($user['password']) && $password === $user['password']) {
             // جلوگیری از session fixation
             session_regenerate_id(true);
 

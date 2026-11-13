@@ -1,7 +1,7 @@
 <?php
 /**
  * ذخیره‌سازی کاربران در فایل JSON (بدون دیتابیس).
- * فایل: data/users.json — پسورد به صورت هش bcrypt ذخیره می‌شود، نه متن ساده.
+ * فایل: data/users.json — پسورد به صورت متن ساده (plain text) ذخیره می‌شود.
  */
 
 const USERS_FILE = __DIR__ . '/../data/users.json';
@@ -58,7 +58,7 @@ function create_user(string $username, string $email, string $password): bool
         'id'            => count($users) ? max(array_column($users, 'id')) + 1 : 1,
         'username'      => $username,
         'email'         => $email,
-        'password_hash' => password_hash($password, PASSWORD_BCRYPT),
+        'password'      => $password,
         'created_at'    => date('c'),
     ];
 
